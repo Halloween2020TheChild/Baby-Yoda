@@ -56,9 +56,15 @@ CSG lower = vitamin_capScrew_M5x100.movez(moldLowering/2)
 CSG upper = vitamin_capScrew_M5x100.movez(moldHeight+moldLowering*1.5)
 CSG upperL = upper.movex(-20)
 CSG upperR = upper.movex(20)
-			
-def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR)
-def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR)
+
+CSG Pry = new Cube (15,4,20).toCSG()						//Create pry location 2
+
+CSG pry1 = Pry.toXMax().movex(moldCore.getMaxX()+1)
+					.movey(1.5)
+CSG pry2 = Pry.toXMin().movex(moldCore.getMinX()-1)
+					.movey(4.5)
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2)
+def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2)
 def moldCoreFinal = core.union(Cylinder.difference(lower))
 
 return [moldB,moldCoreFinal,moldA]
