@@ -2,8 +2,11 @@ import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
 
 import eu.mihosoft.vrl.v3d.CSG
+import eu.mihosoft.vrl.v3d.svg.SVGLoad
 import eu.mihosoft.vrl.v3d.*
 
+double moldHeight = 100
+double moldLowering = -15
 File Right_Hand = ScriptingEngine.fileFromGit("https://github.com/vermontolympian/Baby-Yoda.git",
 "DownRes-Right-Hand.stl");		
 
@@ -22,22 +25,30 @@ Right=Right
 			.movex(-Right.centerX)
 			.movey(-Right.centerY)
 			
-def yDepthOfPartLine =6
-CSG Cube = new Cube(70,30,100).toCSG()						//Create front mold piece
+CSG moldCore = new Cube(70,60,moldHeight).toCSG()						//Create front mold piece
 			.toZMin()
-			.movez(-15)
-			.toYMin()
-			.movey(yDepthOfPartLine)
-CSG cube2=		Cube
-				.toYMax()
-				.movey(yDepthOfPartLine)
+			.movez(moldLowering)
 
 CSG Cylinder = (CSG)(ScriptingEngine.gitScriptRun(
             "https://github.com/Halloween2020TheChild/Baby-Yoda.git", // git location of the library
             "handPlug.groovy" ,null))
 			.toZMax()
-			
-return [Right,core.union(Cylinder),Cube,cube2]
+File f = ScriptingEngine
+.fileFromGit(
+	"https://github.com/Halloween2020TheChild/Baby-Yoda.git",//git repo URL
+	"master",//branch
+	"draftLine.SVG"// File from within the Git repo
+	)
+println "Extruding SVG "+f.getAbsolutePath()
+SVGLoad s = new SVGLoad(f.toURI())
+CSG draftLine = s.extrudeLayerToCSG(moldHeight,"Slice 1")
+				.toYMin()
+				.movey(moldCore.getMinY()-0.5)
+				.movex(moldCore.getMinX())
+				.movez(moldLowering)
+def moldA = moldCore.difference(draftLine)
+
+return [Right,core.union(Cylinder),moldA]
 
 CSG Bolt1 = new Cylinder (2.75,2.75,60,(int)8).toCSG()			//Create bolt hole 1
 			.rotx(90)
