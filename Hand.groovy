@@ -7,6 +7,7 @@ import eu.mihosoft.vrl.v3d.*
 
 double moldHeight = 100
 double moldLowering = -15
+double coneheight=40
 File Right_Hand = ScriptingEngine.fileFromGit("https://github.com/vermontolympian/Baby-Yoda.git",
 "DownRes-Right-Hand.stl");		
 
@@ -25,7 +26,7 @@ Right=Right
 			.movex(-Right.centerX)
 			.movey(-Right.centerY)
 			
-CSG moldCore = new Cube(70,60,moldHeight).toCSG()						//Create front mold piece
+CSG moldCore = new Cube(70,60,moldHeight+coneheight).toCSG()						//Create front mold piece
 			.toZMin()
 			.movez(moldLowering)
 
@@ -42,7 +43,7 @@ File f = ScriptingEngine
 	)
 println "Extruding SVG "+f.getAbsolutePath()
 SVGLoad s = new SVGLoad(f.toURI())
-CSG draftLine = s.extrudeLayerToCSG(moldHeight,"Slice 1")
+CSG draftLine = s.extrudeLayerToCSG(moldHeight+coneheight,"Slice 1")
 				.toYMin()
 				.movey(moldCore.getMinY()-0.5)
 				.movex(moldCore.getMinX())
@@ -60,11 +61,31 @@ CSG upperR = upper.movex(20)
 CSG Pry = new Cube (15,4,20).toCSG()						//Create pry location 2
 
 CSG pry1 = Pry.toXMax().movex(moldCore.getMaxX()+1)
-					.movey(1.5)
+					.movey(1.5)// hand adjust to meet the part line
 CSG pry2 = Pry.toXMin().movex(moldCore.getMinX()-1)
-					.movey(4.5)
-def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2)
-def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2)
+					.movey(4.5)// hand adjust to meet the part line
+def pourLocation = new Transform()
+		.movez(moldHeight+moldLowering)
+		.movey(5)
+		.movex(2)
+CSG pourHole = new Cylinder(2, // Radius at the bottom
+                      		2, // Radius at the top
+                      		40, // Height
+                      		(int)8 //resolution
+                      		).toCSG()//convert to CSG to display    
+				.movez(-8)
+				.transformed(pourLocation)
+				
+CSG pourCone =new Cylinder(2, // Radius at the bottom
+                      		40, // Radius at the top
+                      		40, // Height
+                      		(int)10 //resolution
+                      		).toCSG()//convert to CSG to display  
+							.transformed(pourLocation)
+							.intersect(moldCore.movez(40))
+				
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone)
+def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone)
 def moldCoreFinal = core.union(Cylinder.difference(lower))
 
 return [moldB,moldCoreFinal,moldA]
