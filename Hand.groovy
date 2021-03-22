@@ -33,6 +33,7 @@ CSG Cylinder = (CSG)(ScriptingEngine.gitScriptRun(
             "https://github.com/Halloween2020TheChild/Baby-Yoda.git", // git location of the library
             "handPlug.groovy" ,null))
 			.toZMax()
+			.movez(0.5)
 File f = ScriptingEngine
 .fileFromGit(
 	"https://github.com/Halloween2020TheChild/Baby-Yoda.git",//git repo URL
@@ -46,53 +47,19 @@ CSG draftLine = s.extrudeLayerToCSG(moldHeight,"Slice 1")
 				.movey(moldCore.getMinY()-0.5)
 				.movex(moldCore.getMinX())
 				.movez(moldLowering)
-def moldA = moldCore.difference(draftLine)
-
-return [Right,core.union(Cylinder),moldA]
-
-CSG Bolt1 = new Cylinder (2.75,2.75,60,(int)8).toCSG()			//Create bolt hole 1
-			.rotx(90)
-			.movex(-4)
-			.movez(5)
-			.movey(-10)
-
-CSG Bolt2 = new Cylinder (2.75,2.75,60,(int)8).toCSG()			//Create bolt hole 2
-			.rotx(90)
-			.movex(40)
-			.movez(5)
-			.movey(-10)
 				
-CSG Bolt3 = new Cylinder (2.75,2.75,60,(int)8).toCSG()			//Create bolt hole 3
-			.rotx(90)
-			.movex(-4)
-			.movez(80)
-			.movey(-10)
+CSG vitamin_capScrew_M5x100 = Vitamins.get("capScrew", "M5x100")
+	.rotx(90)
+	.movey(moldCore.getMaxY())
+	
+CSG lower = vitamin_capScrew_M5x100.movez(moldLowering/2)
+CSG upper = vitamin_capScrew_M5x100.movez(moldHeight+moldLowering*1.5)
+CSG upperL = upper.movex(-20)
+CSG upperR = upper.movex(20)
+			
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR)
+def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR)
+def moldCoreFinal = core.union(Cylinder.difference(lower))
 
-CSG Bolt4 = new Cylinder (2.75,2.75,60,(int)8).toCSG()			//Create bolt hole 4
-			.rotx(90)
-			.movex(40)
-			.movez(80)
-			.movey(-10)
+return [moldB,moldCoreFinal,moldA]
 
-CSG Pry1 = new Cube (13,4,20).toCSG()						//Create pry location 1
-			.movex(-9)
-			.movey(20)
-			.movez(40)
-
-CSG Pry2 = new Cube (20,4,20).toCSG()						//Create pry location 2
-			.movex(46)
-			.movey(20)
-			.movez(25)
-
-def stuff = [Cylinder,Right,Bolt1,Bolt2,Bolt3,Bolt4,Pry1,Pry2]	//create group of stuff to be cut out
-
-CSG Palm = Cube.difference(stuff)							//Cut 'stuff' out of palm side of mold
-//			.rotx(-90)
-//			.toZMin()
-				
-CSG Back = Cube2.difference(stuff)							//Cut 'stuff' out of back side of mold
-//			.rotx(90)
-//			.movey(40)
-//			.toZMin()
-
-return [Palm,Back];										//Output mold parts
