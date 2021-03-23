@@ -12,7 +12,7 @@ def branch="master"
 double moldY = 90
 double moldX = 90
 double moldZ = 200
-double neckLength =8.5
+double neckLength =10.5
 
 CSG makeCachedFile(String url, String filename, Closure makeit) {
 	File earCoreFile = ScriptingEngine.fileFromGit(url,
@@ -47,7 +47,12 @@ List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
 		
 	}
 	println "SVG Loading Cached "+filename
-	return new SVGLoad(earCoreFile.toURI()).getLayers()
+	ArrayList<Polygon> list=new ArrayList<Polygon>();
+	SVGLoad l=new SVGLoad(earCoreFile.toURI())
+	for(String s:l.getLayers()) {
+		list.addAll(l.getPolygonByLayers().get(s))
+	}
+	return list
 }
 
 File earFile = ScriptingEngine.fileFromGit(url,
@@ -76,7 +81,7 @@ CSG draftLine = s.extrudeLayerToCSG(moldX*2,"X")
 def slicePlane =new Transform()
 					.movez(neckLength)	
 					.rotY(-5)	
-					.rotX(2)	
+					.rotX(1)	
 CSG boxOfPlug=new Cube(moldX,moldY,neckLength).toCSG().toZMax()
 					.transformed(slicePlane)
 
@@ -84,7 +89,7 @@ CSG boxOfPlug=new Cube(moldX,moldY,neckLength).toCSG().toZMax()
 List<Polygon> polys = makeCachedSVG(url, "earCoreSlice.svg",{  
 	println "Slicing ear"
 	return Slice.slice(earCore,slicePlane,0)
-}) 
+}) .collect{it.transformed(slicePlane)}
 
 
 
@@ -92,6 +97,8 @@ CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
 	CSG corePlug = earCore.intersect(boxOfPlug)
 	return corePlug.union(corePlug.movez(-neckLength)).hull().intersect(boxOfPlug)
 })
-return [earCore,boxOfPlug]
+return [earCore,boxOfPlug,
+	polys
+	]
 
 
