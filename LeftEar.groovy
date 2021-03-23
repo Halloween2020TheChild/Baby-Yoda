@@ -12,7 +12,7 @@ def branch="master"
 
 File earFile = ScriptingEngine.fileFromGit(url,
 		"Left Ear-DownRes.stl");
-//Vitamins.clear();
+Vitamins.clear();
 CSG ear  = Vitamins.get(earFile)
 //		.roty(90)
 //		.toZMin()
@@ -21,11 +21,12 @@ CSG ear  = Vitamins.get(earFile)
 File earCoreFile = ScriptingEngine.fileFromGit(url,
 		"LeftEar-DownRes-4mmInset.stl");
 CSG earCore; 
-if(!earCoreFile.exists()) {
+//if(!earCoreFile.exists()) {
 	println "Making ear core"
 	earCore=ear.toolOffset(-4)
-	ScriptingEngine.pushCodeToGit(url, branch, "LeftEar-DownRes-4mmInset.stl", ear.toStlString(), "Making ear core ", true)
-}
+	ScriptingEngine.pushCodeToGit(url, branch, "LeftEar-DownRes-4mmInset.stl", earCore.toStlString(), "Making ear core ", true)
+//}else
+//	earCore=Vitamins.get(earCoreFile)
 
 //FileUtil.write(Paths.get(earFile.getAbsolutePath()),
 //		ear.toStlString());
