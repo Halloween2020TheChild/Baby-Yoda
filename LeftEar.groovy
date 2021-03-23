@@ -21,7 +21,7 @@ CSG makeCachedFile(String url, String filename, Closure makeit) {
 	if(!earCoreFile.exists()) {
 		println "Making Cached "+filename
 		earCore=makeit()
-		ScriptingEngine.pushCodeToGit(url, "master", "LeftEar-DownRes-4mmInset.stl", earCore.toStlString(), "Making ear core ", true)
+		ScriptingEngine.pushCodeToGit(url, "master", filename, earCore.toStlString(), "Making Cached "+filename, true)
 	}else
 		earCore=Vitamins.get(earCoreFile)
 }
@@ -37,7 +37,7 @@ CSG ear  = Vitamins.get(earFile)
 //FileUtil.write(Paths.get(earFile.getAbsolutePath()),
 //		ear.toStlString());
 earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset.stl",{
-	return earCore=ear.toolOffset(-4)
+	return ear.toolOffset(-4)
 })
 //File earCoreFile = ScriptingEngine.fileFromGit(url,
 //		"LeftEar-DownRes-4mmInset.stl");
