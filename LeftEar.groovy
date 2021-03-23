@@ -27,7 +27,7 @@ CSG makeCachedFile(String url, String filename, Closure makeit) {
 }
 File earFile = ScriptingEngine.fileFromGit(url,
 		"Left Ear-DownRes.stl");
-//Vitamins.clear();
+Vitamins.clear();
 CSG ear  = Vitamins.get(earFile)
 //		.roty(90)
 //		.toZMin()
