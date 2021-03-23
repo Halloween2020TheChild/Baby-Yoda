@@ -12,7 +12,7 @@ def branch="master"
 double moldY = 90
 double moldX = 90
 double moldZ = 200
-double neckLength =9.3
+double neckLength =9.0
 
 CSG makeCachedFile(String url, String filename, Closure makeit) {
 	File earCoreFile = ScriptingEngine.fileFromGit(url,
@@ -23,6 +23,7 @@ CSG makeCachedFile(String url, String filename, Closure makeit) {
 		earCore=makeit()
 		ScriptingEngine.pushCodeToGit(url, "master", filename, earCore.toStlString(), "Making Cached "+filename, true)
 	}else
+		println "Loading cached "+filename
 		earCore=Vitamins.get(earCoreFile)
 	return earCore
 }
