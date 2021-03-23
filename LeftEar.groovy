@@ -12,7 +12,7 @@ def branch="master"
 double moldY = 90
 double moldX = 90
 double moldZ = 200
-double neckLength =9.0
+double neckLength =8.5
 
 CSG makeCachedFile(String url, String filename, Closure makeit) {
 	File earCoreFile = ScriptingEngine.fileFromGit(url,
@@ -43,12 +43,9 @@ List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
 		}
 		ScriptingEngine.pushCodeToGit(url, "master", filename, svg.make(), "Making Cached SVG "+filename, true)
 		
-	}else {
-		println "SVG Loading Cached "+filename
-		polygons=new SVGLoad(earCoreFile.toURI()).getLayers()
-		
 	}
-	return polygons
+	println "SVG Loading Cached "+filename
+	return new SVGLoad(earCoreFile.toURI()).getLayers()
 }
 
 File earFile = ScriptingEngine.fileFromGit(url,
@@ -93,6 +90,6 @@ CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
 	CSG corePlug = earCore.intersect(boxOfPlug)
 	return corePlug.union(corePlug.movez(-neckLength)).hull().intersect(boxOfPlug)
 })
-return [earCore,boxOfPlug,polys]
+return [earCore,boxOfPlug]
 
 
