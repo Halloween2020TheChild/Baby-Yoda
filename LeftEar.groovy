@@ -44,7 +44,7 @@ List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
 		}
 		println "Pushing changes"
 		ScriptingEngine.pushCodeToGit(url, "master", filename, svg.make(), "Making Cached SVG "+filename, true)
-		return polygons
+		//return polygons
 	}
 	println "SVG Loading Cached "+filename
 	ArrayList<Polygon> list=new ArrayList<Polygon>();
