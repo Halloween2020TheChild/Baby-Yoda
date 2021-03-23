@@ -86,19 +86,24 @@ CSG boxOfPlug=new Cube(moldX,moldY,neckLength).toCSG().toZMax()
 					.transformed(slicePlane)
 
 
-List<Polygon> polys = makeCachedSVG(url, "earCoreSlice.svg",{  
+def polys = makeCachedSVG(url, "earCoreSlice.svg",{  
 	println "Slicing ear"
 	return Slice.slice(earCore,slicePlane,0)
-}) .collect{it.transformed(slicePlane)}
+}) 
+println "Extruding neck"
+def earNub = makeCachedFile(url, "earNub.stl",{Extrude.polygons(polys.get(1).transformed(new Transform()
+	.movez(neckLength/2)	), polys.get(1).transformed(slicePlane))})
+def Neck = makeCachedFile(url, "neck.stl",{Extrude.polygons(polys.get(0), polys.get(0).transformed(slicePlane))})
 
+Neck =Neck.difference(earNub)
 
-
+//def extendedCore = earCore.union(Neck)
 CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
 	CSG corePlug = earCore.intersect(boxOfPlug)
 	return corePlug.union(corePlug.movez(-neckLength)).hull().intersect(boxOfPlug)
 })
-return [earCore,boxOfPlug,
-	polys
+return [earCore,
+	Neck
 	]
 
 
