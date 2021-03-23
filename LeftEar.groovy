@@ -35,12 +35,14 @@ List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
 	if(!earCoreFile.exists()) {
 		println "SVG Making Cached "+filename
 		polygons=makeit()
+		println "Exporting to SVG"
 		SVGExporter svg = new SVGExporter();
 		
 		for( Polygon p: polygons){
 			svg.toPolyLine(p);
 			svg.colorTick();
 		}
+		println "Pushing changes"
 		ScriptingEngine.pushCodeToGit(url, "master", filename, svg.make(), "Making Cached SVG "+filename, true)
 		
 	}
