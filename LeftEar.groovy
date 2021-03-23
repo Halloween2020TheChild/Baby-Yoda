@@ -12,7 +12,7 @@ def branch="master"
 
 File earFile = ScriptingEngine.fileFromGit(url,
 		"Left Ear-DownRes.stl");
-Vitamins.clear();
+//Vitamins.clear();
 CSG ear  = Vitamins.get(earFile)
 //		.roty(90)
 //		.toZMin()
