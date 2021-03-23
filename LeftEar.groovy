@@ -17,7 +17,11 @@ CSG ear  = Vitamins.get(earFile)
 //		.roty(90)
 //		.toZMin()
 //ear=ear.movex(-ear.centerX)
-//			.movey(-ear.centerY)		
+//			.movey(-ear.centerY)
+
+//FileUtil.write(Paths.get(earFile.getAbsolutePath()),
+//		ear.toStlString());
+		
 File earCoreFile = ScriptingEngine.fileFromGit(url,
 		"LeftEar-DownRes-4mmInset.stl");
 CSG earCore; 
@@ -27,8 +31,5 @@ if(!earCoreFile.exists()) {
 	ScriptingEngine.pushCodeToGit(url, branch, "LeftEar-DownRes-4mmInset.stl", earCore.toStlString(), "Making ear core ", true)
 }else
 	earCore=Vitamins.get(earCoreFile)
-
-//FileUtil.write(Paths.get(earFile.getAbsolutePath()),
-//		ear.toStlString());
 
 return [ear,earCore]
