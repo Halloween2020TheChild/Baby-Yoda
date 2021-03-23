@@ -4,7 +4,7 @@ import java.nio.file.Paths
 import com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
 import com.neuronrobotics.bowlerstudio.vitamins.Vitamins
 
-import eu.mihosoft.vrl.v3d.CSG
+import eu.mihosoft.vrl.v3d.svg.SVGExporter
 import eu.mihosoft.vrl.v3d.svg.SVGLoad
 import eu.mihosoft.vrl.v3d.*
 def url="https://github.com/Halloween2020TheChild/Baby-Yoda.git"
@@ -12,7 +12,7 @@ def branch="master"
 double moldY = 90
 double moldX = 90
 double moldZ = 200
-double neckLength =30
+double neckLength =9.3
 
 CSG makeCachedFile(String url, String filename, Closure makeit) {
 	File earCoreFile = ScriptingEngine.fileFromGit(url,
@@ -24,30 +24,41 @@ CSG makeCachedFile(String url, String filename, Closure makeit) {
 		ScriptingEngine.pushCodeToGit(url, "master", filename, earCore.toStlString(), "Making Cached "+filename, true)
 	}else
 		earCore=Vitamins.get(earCoreFile)
+	return earCore
 }
+
+List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
+	File earCoreFile = ScriptingEngine.fileFromGit(url,
+		filename);
+	List<Polygon> polygons;
+	if(!earCoreFile.exists()) {
+		println "SVG Making Cached "+filename
+		polygons=makeit()
+		SVGExporter svg = new SVGExporter();
+		
+		for( Polygon p: polygons){
+			svg.toPolyLine(p);
+			svg.colorTick();
+		}
+		ScriptingEngine.pushCodeToGit(url, "master", filename, svg.make(), "Making Cached SVG "+filename, true)
+		
+	}else {
+		println "SVG Loading Cached "+filename
+		polygons=new SVGLoad(earCoreFile.toURI()).getLayers()
+		
+	}
+	return polygons
+}
+
 File earFile = ScriptingEngine.fileFromGit(url,
 		"Left Ear-DownRes.stl");
-Vitamins.clear();
+//Vitamins.clear();
 CSG ear  = Vitamins.get(earFile)
-//		.roty(90)
-//		.toZMin()
-//ear=ear.movex(-ear.centerX)
-//			.movey(-ear.centerY)
 
-//FileUtil.write(Paths.get(earFile.getAbsolutePath()),
-//		ear.toStlString());
 earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset.stl",{
 	return ear.toolOffset(-4)
 })
-//File earCoreFile = ScriptingEngine.fileFromGit(url,
-//		"LeftEar-DownRes-4mmInset.stl");
-//CSG earCore; 
-//if(!earCoreFile.exists()) {
-//	println "Making ear core"
-//	earCore=ear.toolOffset(-4)
-//	ScriptingEngine.pushCodeToGit(url, branch, "LeftEar-DownRes-4mmInset.stl", earCore.toStlString(), "Making ear core ", true)
-//}else
-//	earCore=Vitamins.get(earCoreFile)
+
 File f = ScriptingEngine
 .fileFromGit(
 	"https://github.com/Halloween2020TheChild/Baby-Yoda.git",//git repo URL
@@ -62,12 +73,25 @@ CSG draftLine = s.extrudeLayerToCSG(moldX*2,"X")
 				.movex(-moldX)
 				.rotz(-7)
 				
+def slicePlane =new Transform()
+					.movez(neckLength)	
+					.rotY(-5)	
+					.rotX(2)	
+CSG boxOfPlug=new Cube(moldX,moldY,neckLength).toCSG().toZMax()
+					.transformed(slicePlane)
+
+
+List<Polygon> polys = makeCachedSVG(url, "earCoreSlice.svg",{  
+	println "Slicing ear"
+	return Slice.slice(earCore,slicePlane,0)
+}) 
+
+
 
 CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
-	CSG boxOfPlug=new Cube(moldX,moldY,neckLength).toCSG().toZMin()
 	CSG corePlug = earCore.intersect(boxOfPlug)
 	return corePlug.union(corePlug.movez(-neckLength)).hull().intersect(boxOfPlug)
 })
-return [ear,earCore,draftLine,post]
+return [earCore,boxOfPlug,polys]
 
 
