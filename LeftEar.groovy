@@ -104,7 +104,10 @@ Plane.setDebugger(new IPolygonDebugger() {
 	}
 })
 
-def newNeck =Neck.difference(earNub).union(new Cube(5,100,30).toCSG().movex(-3))
+def newNeck =Neck.difference(earNub)
+CoreWithExtention=makeCachedFile(url,"LeftEarCoreWithExtention.stl",{
+	return newNeck.union(earCore)
+})
 
 //def extendedCore = earCore.union(Neck)
 CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
@@ -113,7 +116,7 @@ CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
 })
 return [
 	
-	newNeck
+	CoreWithExtention
 	]
 
 
