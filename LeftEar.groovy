@@ -61,9 +61,24 @@ File earFile = ScriptingEngine.fileFromGit(url,
 //Vitamins.clear();
 CSG ear  = Vitamins.get(earFile)
 
-earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset.stl",{
+CSG.setProgressMoniter(new ICSGProgress() {
+		@Override
+		public void progressUpdate(int currentIndex, int finalIndex, String type, CSG intermediateShape) {
+			System.out.println(type+"  "+currentIndex+" of "+finalIndex);
+		}
+	})
+
+def earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset.stl",{
 	return ear.toolOffset(-4)
 })
+println "Number of polys in first gen: "+ earCore.getPolygons().size()
+
+//earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset-rev2.stl",{
+//	return ear.toolOffset(-4)
+//})
+//
+//println "Number of polys in second gen: "+ earCore.getPolygons().size()
+
 
 File f = ScriptingEngine
 .fileFromGit(
@@ -105,9 +120,9 @@ Plane.setDebugger(new IPolygonDebugger() {
 })
 
 def newNeck =Neck.difference(earNub)
-CoreWithExtention=makeCachedFile(url,"LeftEarCoreWithExtention.stl",{
-	return newNeck.union(earCore)
-})
+//CoreWithExtention=makeCachedFile(url,"LeftEarCoreWithExtention.stl",{
+//	return newNeck.union(earCore)
+//})
 
 //def extendedCore = earCore.union(Neck)
 CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
@@ -115,8 +130,8 @@ CSG post=makeCachedFile(url,"EarPostNeckPart.stl",{
 	return corePlug.union(corePlug.movez(-neckLength)).hull().intersect(boxOfPlug)
 })
 return [
-	
-	CoreWithExtention
+	earCore,
+	newNeck
 	]
 
 
