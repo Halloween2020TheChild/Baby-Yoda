@@ -1,4 +1,6 @@
 //Your code hereimport com.neuronrobotics.bowlerstudio.scripting.ScriptingEngine
+import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 import com.neuronrobotics.bowlerstudio.BowlerStudioController
@@ -15,14 +17,37 @@ double moldX = 90
 double moldZ = 200
 double neckLength =10.5
 
+void ignore(String url, String filename) {
+	boolean add=false;
+	File earCoreFile = ScriptingEngine.fileFromGit(url,
+		".gitignore");
+	if(earCoreFile.exists()) {
+		String data = earCoreFile.text
+		if(!data.contains(filename)) {
+			ScriptingEngine.pushCodeToGit(url, ScriptingEngine.getBranch(url), ".gitignore", data+"\n"+filename, "updating gitignore ", true)
+		}
+	}else {
+		ScriptingEngine.pushCodeToGit(url, ScriptingEngine.getBranch(url), ".gitignore", filename, "creating gitignore ", true)
+	}
+	
+}
+
 CSG makeCachedFile(String url, String filename, Closure makeit) {
+	if(!filename.toLowerCase().endsWith(".stl"))
+		filename=filename+".stl"
 	File earCoreFile = ScriptingEngine.fileFromGit(url,
 		filename);
 	CSG earCore;
 	if(!earCoreFile.exists()) {
 		println "Making Cached "+filename
 		earCore=makeit()
-		ScriptingEngine.pushCodeToGit(url, "master", filename, earCore.toStlString(), "Making Cached "+filename, true)
+		def earCoreToStlString = earCore.toStlString()
+		if(earCoreToStlString.length()<10000000-1)
+			ScriptingEngine.pushCodeToGit(url, ScriptingEngine.getBranch(url), filename, earCoreToStlString, "Making Cached "+filename, true)
+		else {
+			println "STL too big for git, stored on disk"
+			ignore( url,  filename)
+		}
 	}else
 		println "Loading cached "+filename
 		earCore=Vitamins.get(earCoreFile)
@@ -30,6 +55,8 @@ CSG makeCachedFile(String url, String filename, Closure makeit) {
 }
 
 List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
+	if(!filename.toLowerCase().endsWith(".svg"))
+		filename=filename+".svg"
 	File earCoreFile = ScriptingEngine.fileFromGit(url,
 		filename);
 	List<Polygon> polygons;
@@ -44,8 +71,13 @@ List<Polygon> makeCachedSVG(String url, String filename, Closure makeit) {
 			svg.colorTick();
 		}
 		println "Pushing changes"
-		ScriptingEngine.pushCodeToGit(url, "master", filename, svg.make(), "Making Cached SVG "+filename, true)
-		//return polygons
+		def svgMake = svg.make()
+		if(svgMake.length()<10000000-1)
+			ScriptingEngine.pushCodeToGit(url, ScriptingEngine.getBranch(url), filename, svgMake, "Making Cached SVG "+filename, true)
+		else {
+			println "SVG too big for git, stored on disk"
+			ignore( url,  filename)
+		}
 	}
 	println "SVG Loading Cached "+filename
 	ArrayList<Polygon> list=new ArrayList<Polygon>();
@@ -68,7 +100,7 @@ CSG.setProgressMoniter(new ICSGProgress() {
 		}
 	})
 
-def earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset.stl",{
+def earCore=makeCachedFile(url,"LeftEar-DownRes-4mmInset-2.stl",{
 	return ear.toolOffset(-4)
 })
 println "Number of polys in first gen: "+ earCore.getPolygons().size()
