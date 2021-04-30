@@ -84,8 +84,8 @@ CSG pourCone =new Cylinder(2, // Radius at the bottom
 							.transformed(pourLocation)
 							.intersect(moldCore.movez(40))
 				
-def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone).rotx(90)
-def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone).rotx(-90)
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone).rotx(90).movey(45)
+def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone).rotx(-90).movey(-45)
 def moldCoreFinal = core.union(Cylinder.difference(lower))
 def moldALeft = moldA.mirrory().movex(100)
 def moldBLeft  = moldB.mirrory().movex(100)
