@@ -98,15 +98,6 @@ CSG ear  = Vitamins.get(earFile)
 //		.toZMin()
 //ear=ear.movex(-ear.centerX)
 //			.movey(-ear.centerY)		
-File earCoreFile = ScriptingEngine.fileFromGit(url,
-		"LeftEar-DownRes-4mmInset.stl");
- 
-if(!earCoreFile.exists()) {
-	println "Making ear core"
-	earCore=ear.toolOffset(-4)
-	ScriptingEngine.pushCodeToGit(url, branch, "LeftEar-DownRes-4mmInset.stl", earCore.toStlString(), "Making ear core ", true)
-}else
-	earCore=Vitamins.get(earCoreFile)
 
 
 CSG.setProgressMoniter(new ICSGProgress() {
