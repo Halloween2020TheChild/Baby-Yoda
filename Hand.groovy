@@ -74,11 +74,11 @@ CSG upper = vitamin_capScrew_M5x100.movez(moldHeight+moldLowering*1.5)
 CSG upperL = upper.movex(-20)
 CSG upperR = upper.movex(20)
 
-CSG Pry = new Cube (15,4,20).toCSG()						//Create pry location 2
-
-CSG pry1 = Pry.toXMax().movex(moldCore.getMaxX()+1)
+CSG Pry = new Cube (20,4,20).toCSG()						//Create pry location 2
+				
+CSG pry1 = Pry.toXMin().movex(moldCore.getMaxX()-15)
 					.movey(1.5)// hand adjust to meet the part line
-CSG pry2 = Pry.toXMin().movex(moldCore.getMinX()-8)
+CSG pry2 = Pry.toXMax().movex(moldCore.getMinX()+5)
 					.movey(4.5)// hand adjust to meet the part line
 def pourLocation = new Transform()
 		.movez(moldHeight+moldLowering)
