@@ -29,10 +29,25 @@ Right=Right
 CSG moldCore = new Cube(70,60,moldHeight+coneheight).toCSG()						//Create front mold piece
 			.toZMin()
 			.movez(moldLowering)
+CSG rc= new RoundedCube(	40,// X dimention
+				39,// Y dimention
+				39//  Z dimention
+				)
+				.cornerRadius(4)// sets the radius of the corner
+				.toCSG()// converts it to a CSG tor display
+				.toZMax()
+				.movez(0.5)
+				.movex(-5)
 
-CSG Cylinder = (CSG)(ScriptingEngine.gitScriptRun(
-            "https://github.com/Halloween2020TheChild/Baby-Yoda.git", // git location of the library
-            "handPlug.groovy" ,null))
+CSG Cylinder =new RoundedCube(	40,// X dimention
+				40,// Y dimention
+				40//  Z dimention
+				)
+				.cornerRadius(4)// sets the radius of the corner
+				.toCSG()// converts it to a CSG tor display
+				.toZMax()
+				.movez(1)
+				.movex(-5)
 			.toZMax()
 			.movez(0.5)
 File f = ScriptingEngine
@@ -86,7 +101,7 @@ CSG pourCone =new Cylinder(2, // Radius at the bottom
 				
 def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone).rotx(90).movey(45)
 def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone).rotx(-90).movey(-45)
-def moldCoreFinal = core.union(Cylinder.difference(lower))
+def moldCoreFinal = core.union(rc.difference(lower))
 def moldALeft = moldA.mirrory().movex(100)
 def moldBLeft  = moldB.mirrory().movex(100)
 def moldCoreFinalLeft  = moldCoreFinal.mirrory().movex(100)
