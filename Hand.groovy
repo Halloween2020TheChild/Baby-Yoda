@@ -161,7 +161,7 @@ CSG vent2 = toVent(vents2)
 
 
 									
-def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone,vent,vent2)//.rotx(90).movey(45)
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(90).movey(45)
 def moldB = draftLine.difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(-90).movey(-45)
 def moldCoreFinal = core.union(rc.difference(lower))
 def moldALeft = moldA.mirrory().movex(100)
