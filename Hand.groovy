@@ -27,11 +27,11 @@ Right=Right
 			.movey(-Right.centerY)
 			.movez(-1)
 			
-CSG moldCore = new Cube(70,60,moldHeight+coneheight).toCSG()						//Create front mold piece
+CSG moldCore = new Cube(80,60,moldHeight+coneheight).toCSG()						//Create front mold piece
 			.toZMin()
 			.movez(moldLowering)
 CSG rc= new RoundedCube(	40,// X dimention
-				39,// Y dimention
+				40,// Y dimention
 				39//  Z dimention
 				)
 				.cornerRadius(4)// sets the radius of the corner
@@ -61,8 +61,8 @@ println "Extruding SVG "+f.getAbsolutePath()
 SVGLoad s = new SVGLoad(f.toURI())
 CSG draftLine = s.extrudeLayerToCSG(moldHeight+coneheight,"Slice 1")
 				.toYMin()
-				.movey(moldCore.getMinY()-0.5)
-				.movex(moldCore.getMinX())
+				.movey(-30-0.5)
+				.movex(-35)
 				.movez(moldLowering)
 				
 CSG vitamin_capScrew_M5x100 = Vitamins.get("capScrew", "M5x100")
@@ -73,6 +73,9 @@ CSG lower = vitamin_capScrew_M5x100.movez(moldLowering/2)
 CSG upper = vitamin_capScrew_M5x100.movez(moldHeight+moldLowering*1.5)
 CSG upperL = upper.movex(-20)
 CSG upperR = upper.movex(20)
+CSG lowerL = lower.movex(moldCore.getMaxX()-5)
+CSG lowerR = lower.movex(moldCore.getMinX()+5)
+
 
 CSG Pry = new Cube (20,4,20).toCSG()						//Create pry location 2
 				
@@ -161,8 +164,8 @@ CSG vent2 = toVent(vents2)
 
 
 									
-def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(0).movey(45)
-def moldB = draftLine.intersect(moldCore).difference(Cylinder,Right ,lower,upperL,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(0).movey(-45)
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,lowerL,lowerR,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(90).movey(45)
+def moldB = draftLine.intersect(moldCore).difference(Cylinder,Right ,lower,upperL,lowerL,lowerR,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(-90).movey(-45)
 def moldCoreFinal = core.union(rc.difference(lower))
 def moldALeft = moldA.mirrory().movex(100)
 def moldBLeft  = moldB.mirrory().movex(100)
@@ -175,5 +178,5 @@ moldALeft.setName("LeftMoldA")
 moldBLeft.setName("LeftMoldB")
 moldCoreFinalLeft.setName("LeftMoldCore")
 
-return [moldB,moldCoreFinal,moldA,moldALeft,moldBLeft,moldCoreFinalLeft]
+return [moldB,moldCoreFinal,moldA]//,moldALeft,moldBLeft,moldCoreFinalLeft]
 
