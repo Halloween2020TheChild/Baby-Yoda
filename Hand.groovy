@@ -71,11 +71,13 @@ CSG vitamin_capScrew_M5x100 = Vitamins.get("capScrew", "M5x100")
 	
 CSG lower = vitamin_capScrew_M5x100.movez(moldLowering/2)
 CSG upper = vitamin_capScrew_M5x100.movez(moldHeight+moldLowering*1.5)
+CSG mid=vitamin_capScrew_M5x100.movez((moldHeight+moldLowering*1.5)/2)
 CSG upperL = upper.movex(-20)
 CSG upperR = upper.movex(20)
 CSG lowerL = lower.movex(moldCore.getMaxX()-5)
 CSG lowerR = lower.movex(moldCore.getMinX()+5)
-
+CSG midL = mid.movex(moldCore.getMaxX()-5)
+CSG midR = mid.movex(moldCore.getMinX()+5)
 
 CSG Pry = new Cube (20,4,20).toCSG()						//Create pry location 2
 				
@@ -164,8 +166,8 @@ CSG vent2 = toVent(vents2)
 
 
 									
-def moldA = moldCore.difference(draftLine,Cylinder,Right ,lower,upperL,lowerL,lowerR,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(90).movey(45)
-def moldB = draftLine.intersect(moldCore).difference(Cylinder,Right ,lower,upperL,lowerL,lowerR,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(-90).movey(-45)
+def moldA = moldCore.difference(draftLine,Cylinder,Right ,midL,midR,lower,upperL,lowerL,lowerR,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(90).movey(45)
+def moldB = draftLine.intersect(moldCore).difference(Cylinder,Right ,midL,midR,lower,upperL,lowerL,lowerR,upperR,pry1,pry2,pourHole,pourCone,vent,vent2).rotx(-90).movey(-45)
 def moldCoreFinal = core.union(rc.difference(lower))
 def moldALeft = moldA.mirrory().movex(100)
 def moldBLeft  = moldB.mirrory().movex(100)
